@@ -8,12 +8,12 @@
 #-------------------------------------------------------------------------
 
 echo "-------------------------------------------------"
-echo "Setting up mirrors for optimal download - US Only"
+echo "Setting up mirrors for optimal download - PT Only"
 echo "-------------------------------------------------"
 timedatectl set-ntp true
 pacman -S --noconfirm pacman-contrib
 mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-curl -s "https://www.archlinux.org/mirrorlist/?country=US&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
+curl -s "https://www.archlinux.org/mirrorlist/?country=PT&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
 
 
 
@@ -35,7 +35,7 @@ sgdisk -Z ${DISK} # zap all on disk
 sgdisk -a 2048 -o ${DISK} # new gpt disk 2048 alignment
 
 # create partitions
-sgdisk -n 1:0:+1000M ${DISK} # partition 1 (UEFI SYS), default start block, 512MB
+sgdisk -n 1:0:+512M ${DISK} # partition 1 (UEFI SYS), default start block, 512MB
 sgdisk -n 2:0:0     ${DISK} # partition 2 (Root), default start, remaining
 
 # set partition types
@@ -60,7 +60,7 @@ mkdir /mnt/boot/efi
 mount -t vfat "${DISK}1" /mnt/boot/
 
 echo "--------------------------------------"
-echo "-- Arch Install on Main Drive       --"
+echo "--    Arch Install on Main Drive    --"
 echo "--------------------------------------"
 pacstrap /mnt base base-devel linux linux-firmware vim nano sudo --noconfirm --needed
 genfstab -U /mnt >> /mnt/etc/fstab

@@ -37,8 +37,7 @@ PKGS=(
     # --- Networking Setup
         'wpa_supplicant'            # Key negotiation for WPA wireless networks
         'dialog'                    # Enables shell scripts to trigger dialog boxex
-        'openvpn'                   # Open VPN support
-        'networkmanager-openvpn'    # Open VPN plugin for NM
+        'wireguard-tools'           # Install Wireguard VPN
         'network-manager-applet'    # System tray icon/utility for network connectivity
         'libsecret'                 # Library for storing passwords
     

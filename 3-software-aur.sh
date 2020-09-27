@@ -21,7 +21,7 @@ PKGS=(
 
     'i3lock-fancy'              # Screen locker
     'synology-drive'            # Synology Drive
-    'freeoffice'                # Office Alternative
+    'onlyoffice-bin'                # Office Alternative
     
     # MEDIA ---------------------------------------------------------------
 

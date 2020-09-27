@@ -94,7 +94,7 @@ PKGS=(
 
     'kdenlive'              # Movie Render
     'obs-studio'            # Record your screen
-    'celluloid'             # Video player
+    'smplayer'             # Video player
     
     # GRAPHICS AND DESIGN -------------------------------------------------
 
