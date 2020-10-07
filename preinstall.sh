@@ -11,9 +11,9 @@ echo "-------------------------------------------------"
 echo "Setting up mirrors for optimal download - PT Only"
 echo "-------------------------------------------------"
 timedatectl set-ntp true
-pacman -S --noconfirm pacman-contrib
+pacman -S --noconfirm pacman-contrib reflector
 mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-curl -s "https://www.archlinux.org/mirrorlist/?country=PT&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
+reflector --latest 200 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 
 
@@ -35,7 +35,7 @@ sgdisk -Z ${DISK} # zap all on disk
 sgdisk -a 2048 -o ${DISK} # new gpt disk 2048 alignment
 
 # create partitions
-sgdisk -n 1:0:+512M ${DISK} # partition 1 (UEFI SYS), default start block, 512MB
+sgdisk -n 1:0:+1000M ${DISK} # partition 1 (UEFI SYS), default start block, 512MB
 sgdisk -n 2:0:0     ${DISK} # partition 2 (Root), default start, remaining
 
 # set partition types
@@ -64,13 +64,12 @@ echo "--    Arch Install on Main Drive    --"
 echo "--------------------------------------"
 pacstrap /mnt base base-devel linux linux-firmware vim nano sudo --noconfirm --needed
 genfstab -U /mnt >> /mnt/etc/fstab
-arch-chroot /mnt
 
 echo "--------------------------------------"
 echo "-- Bootloader Systemd Installation  --"
 echo "--------------------------------------"
-bootctl install
-cat <<EOF > /boot/loader/entries/arch.conf
+arch-chroot /mnt bootctl install
+arch-chroot /mnt cat <<EOF > /boot/loader/entries/arch.conf
 title Arch Linux  
 linux /vmlinuz-linux  
 initrd  /initramfs-linux.img  
@@ -80,14 +79,14 @@ EOF
 echo "--------------------------------------"
 echo "--          Network Setup           --"
 echo "--------------------------------------"
-pacman -S networkmanager dhclient --noconfirm --needed
-systemctl enable --now NetworkManager
+arch-chroot /mnt pacman -S networkmanager dhclient --noconfirm --needed
+arch-chroot /mnt systemctl enable --now NetworkManager
 
 echo "--------------------------------------"
 echo "--      Set Password for Root       --"
 echo "--------------------------------------"
 echo "Enter password for root user: "
-passwd root
+arch-chroot /mnt passwd root
 
 exit
 umount -R /mnt
