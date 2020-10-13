@@ -13,7 +13,7 @@ echo "-------------------------------------------------"
 timedatectl set-ntp true
 pacman -S --noconfirm pacman-contrib reflector
 mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-reflector --country Portugal --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+reflector --country Portugal --country Spain --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 
 
 
