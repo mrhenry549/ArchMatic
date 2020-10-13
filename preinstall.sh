@@ -57,12 +57,12 @@ mkdir /mnt
 mount -t ext4 "${DISK}2" /mnt
 mkdir /mnt/boot
 mkdir /mnt/boot/efi
-mount -t vfat "${DISK}1" /mnt/boot/
+mount -t vfat "${DISK}1" /mnt/boot/efi
 
 echo "--------------------------------------"
 echo "--    Arch Install on Main Drive    --"
 echo "--------------------------------------"
-pacstrap /mnt base base-devel linux linux-firmware vim nano sudo --noconfirm --needed
+pacstrap /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware vim nano sudo --noconfirm --needed
 genfstab -U /mnt >> /mnt/etc/fstab
 
 echo "--------------------------------------"
@@ -83,12 +83,31 @@ arch-chroot /mnt pacman -S networkmanager dhclient --noconfirm --needed
 arch-chroot /mnt systemctl enable --now NetworkManager
 
 echo "--------------------------------------"
+echo "--         Iniciate ramdisk         --"
+echo "--------------------------------------"
+arch-chroot /mnt mkinitcpio -p linux
+arch-chroot /mnt mkinitcpio -p linux-lts
+
+echo "--------------------------------------"
 echo "--      Set Password for Root       --"
 echo "--------------------------------------"
 echo "Enter password for root user: "
 arch-chroot /mnt passwd root
 
-exit
+echo "--------------------------------------"
+echo "--           Install GRUB           --"
+echo "--------------------------------------"
+arch-chroot /mnt pacman -S grub efibootmgr dosfstools os-prober mtools --noconfirm --needed
+arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+arch-chroot /mnt mkdir /boot/grub/locale
+arch-chroot /mnt cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+echo "--------------------------------------"
+echo "--     Install Intel microcode      --"
+echo "--------------------------------------"
+arch-chroot /mnt pacman -S intel-ucode
+
 umount -R /mnt
 
 echo "--------------------------------------"
